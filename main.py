@@ -15,7 +15,7 @@ mode = st.radio(
     index=0
 )
 
-tess_lang = st.text_input("OCR Language (Tesseract code)", value="eng")
+tess_lang = st.text_input("OCR Language (EasyOCR code)", value="en")
 target_lang = st.text_input("Translate to (e.g., en, hi, bn, ta, fr)", value="hi")
 font_size = st.slider("Overlay font size", 20, 80, 30)
 

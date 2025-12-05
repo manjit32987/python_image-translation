@@ -1,12 +1,12 @@
-import pytesseract
+import easyocr
 from PIL import Image, ImageDraw, ImageFont
 from deep_translator import GoogleTranslator
 
-def ocr_image(image_path, lang="eng"):
-    pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+def ocr_image(image_path, lang="en"):
     try:
-        text = pytesseract.image_to_string(Image.open(image_path), lang=lang)
-        return text.strip()
+        reader = easyocr.Reader([lang])
+        result = reader.readtext(image_path, detail=0)
+        return "\n".join(result)
     except Exception as e:
         return f"OCR Error: {e}"
 
