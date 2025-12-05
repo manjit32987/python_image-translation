@@ -1,7 +1,7 @@
 streamlit
 pillow
+pytesseract
 easyocr
 deep-translator
-textwrap3
 streamlit-drawable-canvas
 opencv-python
