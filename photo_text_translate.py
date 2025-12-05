@@ -1,31 +1,32 @@
 import easyocr
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image
 from deep_translator import GoogleTranslator
 
-def ocr_image(image_path, lang="en"):
+# Initialize EasyOCR reader globally for better performance
+reader = easyocr.Reader(['en', 'hi', 'bn', 'ta', 'te', 'ml', 'kn', 'or', 'as', 'ne'])
+
+def ocr_image(image, lang="en"):
+    """
+    Perform OCR on a PIL image.
+    :param image: PIL Image object
+    :param lang: language code for OCR (EasyOCR)
+    :return: extracted text
+    """
     try:
-        reader = easyocr.Reader([lang])
-        result = reader.readtext(image_path, detail=0)
+        # EasyOCR can work directly with PIL Image
+        result = reader.readtext(image, detail=0)
         return "\n".join(result)
     except Exception as e:
         return f"OCR Error: {e}"
 
 def translate_text_free(text, target_lang="hi"):
+    """
+    Translate text to target language using deep-translator.
+    :param text: string
+    :param target_lang: target language code
+    :return: translated text
+    """
     try:
-        translated = GoogleTranslator(source="auto", target=target_lang).translate(text)
-        return translated
+        return GoogleTranslator(source="auto", target=target_lang).translate(text)
     except Exception as e:
         return f"Translation Error: {e}"
-
-def draw_translated_text_on_image(input_path, text, output_path, font_size=30):
-    image = Image.open(input_path)
-    draw = ImageDraw.Draw(image)
-
-    try:
-        font = ImageFont.truetype("arial.ttf", font_size)
-    except:
-        font = ImageFont.load_default()
-
-    draw.text((10, 10), text, font=font, fill=(255, 255, 255))
-    image.save(output_path)
-    return output_path

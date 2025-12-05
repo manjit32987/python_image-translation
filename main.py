@@ -1,34 +1,29 @@
 import streamlit as st
 from PIL import Image
-import pytesseract
-from googletrans import Translator
+from photo_text_translate import ocr_image, translate_text_free
 from streamlit_drawable_canvas import st_canvas
 
-# Set tesseract path (Windows)
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+st.set_page_config(page_title="OCR & Translation App", layout="wide")
+st.title("📸 OCR & Translation Tool")
 
-translator = Translator()
-st.title("📸 OCR & Translation with Selectable Text Area")
-
-# ------------------ Image Input ------------------
-mode = st.radio("Choose Input Method", ["Upload Photo", "Camera"])
+# ------------------ Input Mode ------------------
+mode = st.radio("Choose Input Method", ["Upload Photo", "Use Camera"])
 img = None
 
 if mode == "Upload Photo":
     uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
     if uploaded_file:
         img = Image.open(uploaded_file)
-
-elif mode == "Camera":
+elif mode == "Use Camera":
     camera_file = st.camera_input("Capture a photo")
     if camera_file:
         img = Image.open(camera_file)
 
-# ------------------ If image loaded ------------------
+# ------------------ If Image Loaded ------------------
 if img:
-    st.subheader("Select the area containing text")
+    st.subheader("Select the area containing text (draw rectangle)")
     
-    # Create canvas for user to draw rectangle
+    # Drawable Canvas for selecting text area
     canvas_result = st_canvas(
         fill_color="rgba(0,0,0,0)",  # transparent fill
         stroke_width=2,
@@ -41,10 +36,10 @@ if img:
         key="canvas",
     )
 
-    # Dropdown for translation language
+    # Translation language dropdown
     st.subheader("Choose Translation Language")
     lang = st.selectbox(
-        "Translation Language",
+        "Select language",
         {
             "English": "en",
             "Hindi": "hi",
@@ -62,7 +57,6 @@ if img:
         }
     )
 
-    # ------------------ Process OCR ------------------
     if st.button("Extract & Translate"):
         if canvas_result.json_data["objects"]:
             # Take the first rectangle drawn
@@ -74,11 +68,11 @@ if img:
             
             cropped_img = img.crop((left, top, left + width, top + height))
             
-            extracted_text = pytesseract.image_to_string(cropped_img)
+            extracted_text = ocr_image(cropped_img)
             st.subheader("📝 Extracted Text")
             st.text_area("Extracted Text", extracted_text, height=200)
             
-            translated_text = translator.translate(extracted_text, dest=lang).text
+            translated_text = translate_text_free(extracted_text, target_lang=lang)
             st.subheader("🌍 Translated Text")
             st.text_area("Translated Text", translated_text, height=200)
         else:

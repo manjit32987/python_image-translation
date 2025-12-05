@@ -1,6 +1,5 @@
 streamlit
 pillow
-pytesseract
 easyocr
 deep-translator
 streamlit-drawable-canvas
