@@ -3,3 +3,5 @@ pillow
 easyocr
 deep-translator
 textwrap3
+streamlit-drawable-canvas
+opencv-python
